@@ -1,0 +1,339 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Refund {
+  id        String    @id @default(uuid())
+  orderId   String
+  order     Order     @relation(fields: [orderId], references: [id])  
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  productId String
+  product   Product   @relation(fields: [productId], references: [id])
+  quantity  Int
+  reason    String    @default("")
+  status    String
+  method    String
+  accept    Boolean   @default(false)
+  images    ImageRefund[]
+  note      String    @default("")
+
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([productId])
+}
+
+model ImageRefund {
+  id        String    @id @default(uuid())
+  url       String
+  refundId  String
+  refund    Refund    @relation(fields: [refundId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([refundId])
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  gender    Int
+  height    Int
+  weight    Int
+  email     String
+  userId    String
+  imageUrl  String
+  phone     String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  address   String
+  reviews   Review[]
+  favorites Favorite[]
+  orders    Order[]
+  refunds   Refund[]
+}
+
+model Review {
+  id          String       @id @default(uuid())
+  userId      String
+  storeId     String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  user        User         @relation(fields: [userId], references: [id])
+  store       Store        @relation(fields: [storeId], references: [id])
+  reviewItems ReviewItem[]
+
+  @@index([storeId])
+  @@index([userId])
+}
+
+model ReviewItem {
+  id        String   @id @default(uuid())
+  reviewId  String
+  userName  String   @default("")
+  rating    Int
+  content   String
+  productId String
+  createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+
+  @@index([reviewId])
+  @@index([productId])
+}
+
+model Favorite {
+  id            String         @id @default(uuid())
+  userId        String
+  storeId       String
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  user          User           @relation(fields: [userId], references: [id])
+  store         Store          @relation(fields: [storeId], references: [id])
+  favoriteItems FavoriteItem[]
+
+  @@index([storeId])
+  @@index([userId])
+}
+
+model FavoriteItem {
+  id         String   @id @default(uuid())
+  favoriteId String
+  productId  String
+  favorite   Favorite @relation(fields: [favoriteId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@index([favoriteId])
+  @@index([productId])
+}
+
+model Store {
+  id         String      @id @default(uuid())
+  name       String
+  userId     String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  favorite   Favorite[]
+  review     Review[]
+  billboards Billboard[] @relation("StoreToBillboard")
+  categories Category[]  @relation("StoreToCategory")
+  products   Product[]   @relation("StoreToProduct")
+  sizes      Size[]      @relation("StoreToSize")
+  colors     Color[]     @relation("StoreToColor")
+  orders     Order[]     @relation("StoreToOrder")
+  imports    Import[]
+  coupons    Coupon[]
+}
+
+model Billboard {
+  id         String     @id @default(uuid())
+  storeId    String
+  label      String
+  imageUrl   String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  store      Store      @relation("StoreToBillboard", fields: [storeId], references: [id])
+  categories Category[]
+  imports    Import[]
+
+  @@index([storeId])
+}
+
+model Category {
+  id          String       @id @default(uuid())
+  storeId     String
+  billboardId String
+  name        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  store       Store        @relation("StoreToCategory", fields: [storeId], references: [id])
+  billboard   Billboard    @relation(fields: [billboardId], references: [id])
+  products    Product[]    @relation("CategoryToProduct")
+  importItems ImportItem[]
+
+  @@index([storeId])
+  @@index([billboardId])
+}
+
+model Product {
+  id              String         @id @default(uuid())
+  storeId         String
+  categoryId      String
+  name            String
+  price           Decimal
+  priceVN         Decimal
+  isFeatured      Boolean        @default(false)
+  isArchived      Boolean        @default(false)
+  isNewed         Boolean        @default(false)
+  isDiscounted    Boolean        @default(false)
+  perDiscount     Int            @default(0)
+  priceDiscount   Decimal
+  priceVNDiscount Decimal
+  amount          Int
+  sellAmount      Int            @default(0)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  store           Store          @relation("StoreToProduct", fields: [storeId], references: [id])
+  category        Category       @relation("CategoryToProduct", fields: [categoryId], references: [id])
+  sizes           ProductSize[]
+  colors          ProductColor[]
+  images          Image[]
+  orderItems      OrderItem[]
+  importItems     ImportItem[]
+  favoriteItems   FavoriteItem[]
+  reviewItems     ReviewItem[]
+  refunds         Refund[]
+
+  @@index([storeId])
+  @@index([categoryId])
+}
+
+model Order {
+  id          String      @id @default(uuid())
+  storeId     String
+  isPaid      Boolean     @default(false)
+  userId      String
+  state       String      @default("")
+  deliveryDay Int         @default(0)
+  couponId    String      @default("")
+  totalPrice  Decimal
+  phone       String      @default("")
+  address     String      @default("")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  store       Store       @relation("StoreToOrder", fields: [storeId], references: [id])
+  orderItems  OrderItem[]
+  refunds     Refund[]
+  user        User        @relation(fields: [userId], references: [id])
+
+  @@index([storeId])
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  orderId   String
+  productId String
+  colorId   String
+  sizeId    String
+  quantity  Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+  color     Color   @relation(fields: [colorId], references: [id])
+  size      Size    @relation(fields: [sizeId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model Size {
+  id         String        @id @default(uuid())
+  storeId    String
+  name       String
+  value      String
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  store      Store         @relation("StoreToSize", fields: [storeId], references: [id])
+  products   ProductSize[]
+  orderItems OrderItem[]
+
+  @@index([storeId])
+}
+
+model ProductSize {
+  productId String
+  sizeId    String
+  product   Product @relation(fields: [productId], references: [id])
+  size      Size    @relation(fields: [sizeId], references: [id])
+
+  @@id([productId, sizeId])
+}
+
+model Color {
+  id         String         @id @default(uuid())
+  storeId    String
+  name       String
+  value      String
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  store      Store          @relation("StoreToColor", fields: [storeId], references: [id])
+  products   ProductColor[]
+  orderItems OrderItem[]
+
+  @@index([storeId])
+}
+
+model ProductColor {
+  productId String
+  colorId   String
+  product   Product @relation(fields: [productId], references: [id])
+  color     Color   @relation(fields: [colorId], references: [id])
+
+  @@id([productId, colorId])
+}
+
+model Image {
+  id        String   @id @default(uuid())
+  productId String
+  url       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@index([productId])
+}
+
+model Import {
+  id          String       @id @default(uuid())
+  storeId     String
+  billboardId String
+  name        String       @default("")
+  totalPrice  Decimal
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  store       Store        @relation(fields: [storeId], references: [id])
+  billboard   Billboard    @relation(fields: [billboardId], references: [id])
+  importItems ImportItem[]
+
+  @@index([storeId])
+  @@index([billboardId])
+}
+
+model ImportItem {
+  id         String   @id @default(uuid())
+  importId   String
+  categoryId String
+  productId  String
+  quantity   Int
+  import     Import   @relation(fields: [importId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id])
+  product    Product  @relation(fields: [productId], references: [id])
+
+  @@index([importId])
+  @@index([productId])
+}
+
+model Coupon {
+  id          String   @id @default(uuid())
+  storeId     String
+  code        String
+  description String
+  value       Int
+  expiredDate DateTime
+  quantity    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  store       Store    @relation(fields: [storeId], references: [id])
+
+  @@index([storeId])
+}

@@ -29,13 +29,22 @@ export async function GET(
       return new NextResponse("Store id is required", { status: 400 });
     }
 
+    const user = await prismadb.user.findFirst({
+      where: {
+        userId: customerId
+      }
+    })
+
+    if (!user) {
+      return new NextResponse("User is required", { status: 400 });
+    }
+
     const order = await prismadb.order.findMany({
       where: {
         storeId: params.storeId,
-        userId: customerId,
+        userId: user.id,
         isPaid: true,
-        ...(startDate && { createdAt: { gte: startDate } }),
-        ...(endDate && { createdAt: { lte: endDate } }),
+        ...(startDate && endDate && { createdAt: { gte: startDate, lte: endDate } }),
       },
       select: {
         orderItems: {

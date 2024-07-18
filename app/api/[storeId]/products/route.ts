@@ -119,6 +119,7 @@ export async function GET(
   try {
     const { searchParams } = new URL(req.url)
     const categoryId = searchParams.get('categoryId') || undefined;
+    const genderType = searchParams.get('genderType') || undefined;
     const colorId = searchParams.get('colorId') || undefined;
     const sizeId = searchParams.get('sizeId') || undefined;
     const minPrice = parseFloat(searchParams.get('minPrice') || '1');
@@ -145,6 +146,7 @@ export async function GET(
             sizeId: sizeId,
           },
         } : undefined,
+        genderType: genderType ? genderType : "0",
         isFeatured: isFeatured ? true : undefined,
         isNewed: isNewed ? true : undefined,
         isDiscounted: isDiscounted ? true : undefined,

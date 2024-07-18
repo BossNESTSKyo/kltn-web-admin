@@ -82,6 +82,9 @@ export async function GET(
         updatedAt: true,
         id: true
       },
+      orderBy: {
+        createdAt: 'desc'
+      },
     });
 
     return NextResponse.json({ data: order }, {

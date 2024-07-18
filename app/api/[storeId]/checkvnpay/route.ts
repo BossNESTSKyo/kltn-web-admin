@@ -31,6 +31,7 @@ export async function POST(
       },
       data: {
         isPaid: true,
+        state: "payment",
         address: "",
         phone: "",
       },

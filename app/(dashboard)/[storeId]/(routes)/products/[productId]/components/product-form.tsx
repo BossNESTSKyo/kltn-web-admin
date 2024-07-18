@@ -44,6 +44,7 @@ const formSchema = z.object({
   categoryId: z.string().min(1),
   colorIds: z.array(z.string().uuid()).min(1),
   sizeIds: z.array(z.string().uuid()).min(1),
+  genderType: z.string().min(0),
   isFeatured: z.boolean().default(false).optional(),
   isArchived: z.boolean().default(false).optional(),
   isNewed: z.boolean().default(false).optional(),
@@ -71,6 +72,12 @@ export const ProductForm: React.FC<ProductFormProps> = ({
   colors,
 }) => {
   const [isDiscounted, setIsDiscounted] = useState(false);
+
+  const genderSelect = [
+    { id: "0", label: "All" },
+    { id: "1", label: "Male" },
+    { id: "2", label: "Female" },
+  ];
 
   useEffect(() => {
     if (initialData && initialData.isDiscounted) {
@@ -110,6 +117,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
         categoryId: "",
         colorIds: [],
         sizeIds: [],
+        genderType: "0",
         isFeatured: false,
         isArchived: false,
         isNewed: false,
@@ -351,22 +359,33 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             />
             <FormField
               control={form.control}
-              name="isFeatured"
+              name="genderType"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      // @ts-ignore
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>Featured</FormLabel>
-                    <FormDescription>
-                      This product will appear as Feature on the home page
-                    </FormDescription>
-                  </div>
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <Select
+                    disabled={loading}
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue
+                          defaultValue={field.value}
+                          placeholder="Select state"
+                        />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {genderSelect.map((gender) => (
+                        <SelectItem key={gender.id} value={gender.id}>
+                          {gender.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -414,6 +433,27 @@ export const ProductForm: React.FC<ProductFormProps> = ({
                 )}
               />
             )}
+            <FormField
+              control={form.control}
+              name="isFeatured"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      // @ts-ignore
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Featured</FormLabel>
+                    <FormDescription>
+                      This product will appear as Feature on the home page
+                    </FormDescription>
+                  </div>
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="isNewed"

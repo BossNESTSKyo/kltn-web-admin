@@ -146,7 +146,7 @@ export async function GET(
             sizeId: sizeId,
           },
         } : undefined,
-        genderType: genderType ? genderType : "0",
+        genderType: genderType ? genderType : undefined,
         isFeatured: isFeatured ? true : undefined,
         isNewed: isNewed ? true : undefined,
         isDiscounted: isDiscounted ? true : undefined,

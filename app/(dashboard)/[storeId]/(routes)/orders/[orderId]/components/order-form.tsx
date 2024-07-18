@@ -87,7 +87,7 @@ export const OrderForm: React.FC<OrderFormProps> = ({ initialData }) => {
       setLoading(true);
 
       const newData = { ...data, customerId: initialData.user.id };
-      const response = await axios.patch(
+      await axios.patch(
         `/api/${params.storeId}/order/${params.orderId}/admin`,
         newData
       );
@@ -189,19 +189,6 @@ export const OrderForm: React.FC<OrderFormProps> = ({ initialData }) => {
                 </FormItem>
               )}
             />
-            {/* <FormField
-              control={form.control}
-              name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>State</FormLabel>
-                  <FormControl>
-                    <Input disabled={loading} placeholder="State" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
             <FormField
               control={form.control}
               name="state"

@@ -42,6 +42,7 @@ export async function POST(req: Request) {
       },
       data: {
         isPaid: true,
+        state: "payment",
         address: addressString,
         phone: session?.customer_details?.phone || '',
       },

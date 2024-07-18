@@ -28,13 +28,6 @@ export async function POST(
     return new NextResponse("TotalPrice is required", { status: 400, headers: corsHeaders });
   }
 
-  // const products = await prismadb.product.findMany({
-  //   where: {
-  //     id: {
-  //       in: productIds
-  //     }
-  //   }
-  // });
 
   const line_items: Stripe.Checkout.SessionCreateParams.LineItem[] = [];
 
@@ -64,6 +57,7 @@ export async function POST(
       userId: user ? user.id : "",
       couponId: couponId ? couponId : "",
       totalPrice: totalPrice,
+      state: "order",
       orderItems: {
         create: products.map((product: any) => ({
           product: {

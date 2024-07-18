@@ -193,7 +193,7 @@ model Product {
   favoriteItems   FavoriteItem[]
   reviewItems     ReviewItem[]
   refunds         Refund[]
-  genderType          String          @default("0")
+  genderType      String          @default("0")
 
   @@index([storeId])
   @@index([categoryId])

@@ -55,6 +55,7 @@ export async function POST(
       isPaid: false,
       userId: user ? user.id : "",
       totalPrice: totalPrice,
+      state: "order",
       orderItems: {
         create: products.map((product: any) => ({
           product: {

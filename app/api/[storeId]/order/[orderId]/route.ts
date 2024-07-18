@@ -52,8 +52,7 @@ export async function PATCH(
         },
         data: {
           phone: phoneNumber,
-          address, 
-          state
+          address,
         }
       });
     }

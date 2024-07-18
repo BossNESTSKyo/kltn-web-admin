@@ -100,7 +100,7 @@ export async function PATCH(
 
     const body = await req.json();
 
-    const { name, price, priceVN, categoryId, images, colorIds, sizeIds, isFeatured, isArchived, isNewed, isDiscounted, perDiscount } = body;
+    const { name, price, priceVN, categoryId, images, colorIds, sizeIds, isFeatured, isArchived, isNewed, isDiscounted, perDiscount, genderType } = body;
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 403 });
@@ -166,7 +166,8 @@ export async function PATCH(
         isDiscounted,
         perDiscount,
         priceDiscount,
-        priceVNDiscount
+        priceVNDiscount,
+        genderType
       },
     });
 

@@ -27,7 +27,7 @@ export const ChartUser: React.FC<ChartUserProps> = ({ storeId }) => {
     };
 
     fetchData();
-  }, []);
+  }, [storeId]);
 
   return (
     <>

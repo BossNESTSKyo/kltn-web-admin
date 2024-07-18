@@ -36,7 +36,7 @@ export const ChartProductSell: React.FC<ChartProductProps> = ({ storeId }) => {
     };
 
     fetchData();
-  }, []);
+  }, [storeId]);
 
   const handleChangeCategory = async (value: string) => {
     const products = await axios.get(
@@ -59,9 +59,11 @@ export const ChartProductSell: React.FC<ChartProductProps> = ({ storeId }) => {
           </SelectTrigger>
           <SelectContent>
             {categories.length > 0 &&
-              categories.map((category: any) => {
+              categories.map((category: any, index: any) => {
                 return (
-                  <SelectItem value={category.id}>{category.name}</SelectItem>
+                  <div key={index}>
+                    <SelectItem value={category.id}>{category.name}</SelectItem>
+                  </div>
                 );
               })}
           </SelectContent>
@@ -72,9 +74,11 @@ export const ChartProductSell: React.FC<ChartProductProps> = ({ storeId }) => {
           </SelectTrigger>
           <SelectContent>
             {products.length > 0 &&
-              products.map((product: any) => {
+              products.map((product: any, index: any) => {
                 return (
-                  <SelectItem value={product.id}>{product.name}</SelectItem>
+                  <div key={index}>
+                    <SelectItem value={product.id}>{product.name}</SelectItem>
+                  </div>
                 );
               })}
           </SelectContent>
